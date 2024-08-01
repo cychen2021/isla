@@ -332,11 +332,11 @@ def evaluate_z3_re_comp(expr: z3.ExprRef, _) -> Maybe[Z3EvalResult]:
 
     maybe_children_result: Maybe[Tuple[Z3EvalResult]] = result_to_maybe(
         reduce(
-            lambda acc, maybe_child_result: acc.map(
-                lambda some_acc: maybe_child_result.map(
-                    lambda child_result: some_acc + (child_result,)
-                )
-            ),
+            lambda acc, maybe_child_result: (
+                acc.unwrap() + (maybe_child_result.unwrap(),)
+                if isinstance(acc, Success) and isinstance(maybe_child_result, Success)
+                else Failure(NotImplementedError("Not implemented."))
+            )
             map(evaluate_z3_expression, child.children()),
             Success(()),
         )
