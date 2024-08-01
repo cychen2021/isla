@@ -80,7 +80,7 @@ def evaluate_z3_expression(
             case Failure(exc):
                 return Failure(exc)
 
-    def not_implemented_failure(_=Nothing) -> Failure[NotImplementedError]:
+    def not_implemented_failure(_unused1=None, _unused2=None) -> Failure[NotImplementedError]:
         logger = logging.getLogger("Z3 evaluation")
         logger.debug("Evaluation of expression %s not implemented.", expr)
         return Failure(
@@ -148,7 +148,7 @@ def evaluate_z3_expression(
 def evaluate_z3_string_value(expr: z3.ExprRef, _) -> Maybe[Z3EvalResult]:
     if not z3.is_string_value(expr):
         return Nothing
-    expr: z3.StringVal
+    # expr: z3.StringVal
     return Some(((), expr.as_string().replace(r"\u{}", "\x00")))
 
 
@@ -156,7 +156,7 @@ def evaluate_z3_int_value(expr: z3.ExprRef, _) -> Maybe[Z3EvalResult]:
     if not z3.is_int_value(expr):
         return Nothing
 
-    expr: z3.IntVal
+    # expr: z3.IntVal
     return Some(((), expr.as_long()))
 
 
@@ -164,7 +164,7 @@ def evaluate_z3_rat_value(expr: z3.ExprRef, _) -> Maybe[Z3EvalResult]:
     if not z3.is_rational_value(expr):
         return Nothing
 
-    expr: z3.RatVal
+    # expr: z3.RatVal
     return Some(((), expr.numerator().as_long() / expr.denominator().as_long()))
 
 
