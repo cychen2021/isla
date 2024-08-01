@@ -336,7 +336,7 @@ def evaluate_z3_re_comp(expr: z3.ExprRef, _) -> Maybe[Z3EvalResult]:
                 acc.unwrap() + (maybe_child_result.unwrap(),)
                 if isinstance(acc, Success) and isinstance(maybe_child_result, Success)
                 else Failure(NotImplementedError("Not implemented."))
-            )
+            ),
             map(evaluate_z3_expression, child.children()),
             Success(()),
         )
