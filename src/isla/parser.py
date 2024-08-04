@@ -369,8 +369,44 @@ class EarleyParser(Parser):
 
         for path in paths:
             ptrees = [self.extract_trees(self.forest(*p)) for p in path]
-            for p in itertools.product(*ptrees):
-                yield (name, p)
+            
+            ptrs = [0] * len(ptrees)
+            accs = [[]] * len(ptrees)
+            
+            while True:
+                result = []
+                new_ptrs = []
+                new_accs = []
+                reset_first = False
+                dead_end = False
+                for i, ptr, acc, gen in reversed(list(zip(range(len(ptrees)), ptrs, accs, ptrees))):
+                    if ptr < len(acc):
+                        result.append(acc[ptr])
+                        new_ptrs.append(ptr + 1)
+                        new_accs.append(acc)
+                        break
+                    else:
+                        try:
+                            next_item = next(gen)
+                            result.append(next_item)
+                            new_accs.append(acc + [next_item])
+                            new_ptrs.append(ptr + 1)
+                        except StopIteration:
+                            if i == 0:
+                                reset_first = True
+                                break
+                            if len(acc) == 0:
+                                dead_end = True
+                                break
+                            new_ptrs.append(0)
+                            result.append(acc[0])
+                            new_accs.append(acc)
+                if reset_first or dead_end:
+                    break
+                ptrs = list(reversed(ptrs))
+                result = list(reversed(result))
+                accs = list(reversed(accs))
+                yield (name, result)
 
     def predict(self, col, sym, state):
         for alt in self.cgrammar[sym]:
